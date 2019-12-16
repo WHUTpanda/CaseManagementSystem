@@ -1,0 +1,179 @@
+package edu.whut.cs.oo.service.impl;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import edu.whut.cs.oo.dao.ArchiveDao;
+import edu.whut.cs.oo.domain.Archive;
+import edu.whut.cs.oo.exception.BaseException;
+import edu.whut.cs.oo.service.ArchiveService;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.sql.Timestamp;
+
+import edu.whut.cs.oo.Application;
+import edu.whut.cs.oo.common.Constants;
+import edu.whut.cs.oo.dao.ArchiveDao;
+import edu.whut.cs.oo.domain.Archive;
+import edu.whut.cs.oo.exception.BaseException;
+import edu.whut.cs.oo.exception.FileException;
+import edu.whut.cs.oo.exception.HaveExistException;
+import edu.whut.cs.oo.exception.NoObjectException;
+import edu.whut.cs.oo.common.FileUtility;
+
+public class ArchiveSeviceImpl implements ArchiveService {
+
+	private ArchiveDao archiveDao;
+	private List<Archive> arcs=new ArrayList<Archive>();
+	@Override
+	public void setArchiveDao(ArchiveDao archiveDao) {
+		this.archiveDao = archiveDao;
+		
+	}
+	@Override
+	public  Archive uploadArchive(Archive Archive) throws BaseException {
+		if (archiveDao.findById(Archive.getId())!=null) {
+			throw new HaveExistException(Archive.getId());
+		}
+		if (Archive.getSourcePath() != null) {
+			Archive.setAbsolutePath(uploadFile(Archive.getSourcePath()));
+			Archive.setFileName(getFileName(Archive.getSourcePath()));
+			}
+		if (Application.currentUser != null) {
+			Archive.setUser(Application.currentUser);
+		}
+		Archive.setSourcePath(null);
+		Archive.setTimestamp(new Timestamp(System.currentTimeMillis()));
+		return archiveDao.insert(Archive);
+	}
+
+	private String uploadFile(String sourcePath) throws BaseException{
+		File uploadDirectory = new File(Constants.UPLOAD_PATH);
+		if (!uploadDirectory.exists()) {
+			uploadDirectory.mkdirs();
+		}
+		
+		byte[] buffer = new byte[1024];
+		
+		File tempFile =new File(sourcePath.trim());
+		String filename = tempFile.getName();
+		String extName = getExtensionName(filename);
+		String absolutePath = Constants.UPLOAD_PATH + System.currentTimeMillis() + "." + extName;
+		try {
+		BufferedInputStream infile = new BufferedInputStream(new FileInputStream(tempFile));
+		BufferedOutputStream targetfile = new BufferedOutputStream(new FileOutputStream(absolutePath)); 
+
+		while (true) {
+			int byteRead=infile.read(buffer); //从文件读数据给字节数组
+            if (byteRead==-1) //在文件尾，无数据可读
+                break;  //退出循环           
+            targetfile.write(buffer,0,byteRead);  //将读到的数据写入目标文件
+        }
+		infile.close();
+		targetfile.close();
+		} catch (IOException e) {
+			throw new FileException();
+		}
+		return absolutePath;
+	}
+	
+	@Override
+	public Archive downloadArchive(long id, String targetPath) throws BaseException, IOException {
+		Archive archive = archiveDao.findById(id);
+		if (archive == null) {
+			throw new NoObjectException(id);
+		}
+		downloadFile(archive, targetPath);
+		return archive;
+	}
+
+	private void downloadFile(Archive archive, String targetPath) throws IOException {
+		File downloadDirectory = new File(Constants.DOWNLOAD_PATH);
+		if (!downloadDirectory.exists()) {
+			downloadDirectory.mkdirs();
+		}
+		
+		byte[] buffer = new byte[1024];
+		
+		File tempFile =new File(archive.getAbsolutePath());
+		String filename = archive.getFileName();
+		
+		BufferedInputStream infile = new BufferedInputStream(new FileInputStream(tempFile));
+		String saveFilePath = targetPath == null ? Constants.DOWNLOAD_PATH + filename : targetPath;
+		BufferedOutputStream targetfile = new BufferedOutputStream(new FileOutputStream(saveFilePath)); 
+
+		while (true) {
+			int byteRead=infile.read(buffer); //从文件读数据给字节数组
+            if (byteRead==-1) //在文件尾，无数据可读
+                break;  //退出循环           
+            targetfile.write(buffer,0,byteRead);  //将读到的数据写入目标文件
+        }
+		infile.close();
+		targetfile.close();
+		
+	}
+
+	public Archive deleteArchive(long id) throws BaseException {
+		Archive archive = archiveDao.findById(id);
+		if (archive == null) {
+			throw new NoObjectException(id);
+		}
+		return archiveDao.delete(archive);
+	}
+
+
+	public Archive getArchive(long id) throws BaseException {
+		List<Archive> archives = archiveDao.findAllOnes();
+		for (Archive archive : archives) {		
+			if(id==archive.getId()) {
+					return archive;
+			}
+		}
+		return null;
+	}
+
+
+	public List<Archive> getAllArchives() throws BaseException {
+		return archiveDao.findAllOnes();	
+		}
+
+
+	public void clear() throws BaseException {
+		List<Archive> archives = archiveDao.findAllOnes();
+		for (Archive archive : archives) {
+			archiveDao.delete(archive);
+		}
+	}
+
+	public Archive creatArchive(Archive archive) throws BaseException {
+		if (archiveDao.findById(archive.getId()) != null) {
+			throw new HaveExistException(archive.getId());
+		}
+		archive.setTimestamp(new Timestamp(System.currentTimeMillis()));
+		return archiveDao.insert(archive);
+	}
+
+	public List<Archive> findByTitle(String title) throws BaseException {
+		List<Archive> archives = archiveDao.findAllOnes();	
+		for (Archive archive : archives) {
+			if(title.equals(archive.getTitle())) {
+				arcs.add(archive);
+			}	
+		}
+		return arcs;
+	}
+	@Override
+	public Archive updateArchive(Archive archive) throws BaseException {
+		if(archiveDao.findById(archive.getId())==null) {
+			throw new NoObjectException(archive.getId());
+		}
+		return archiveDao.update(archive);	
+	}
+
+
+
+}

@@ -1,0 +1,10 @@
+package edu.whut.cs.oo.frame;
+
+public class ArchiveFrame {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

@@ -1,0 +1,5 @@
+package edu.whut.cs.oo.service;
+
+public class ArchiveService {
+
+}

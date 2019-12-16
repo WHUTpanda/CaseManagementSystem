@@ -1,0 +1,8 @@
+package edu.whut.cs.oo.dao;
+
+import edu.whut.cs.oo.domain.Archive;
+
+public interface ArchiveDao  extends BaseDao<Archive>{
+
+}
+

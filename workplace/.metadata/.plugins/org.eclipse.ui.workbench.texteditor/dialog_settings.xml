@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item value="false" key="isRegEx"/>
+		<item value="setFrame" key="selection"/>
+		<item value="false" key="casesensitive"/>
+		<item value="false" key="incremental"/>
+		<item value="true" key="wrap"/>
+		<item value="false" key="wholeword"/>
+		<list key="findhistory">
+			<item value="setframe"/>
+			<item value="current"/>
+			<item value="curr"/>
+			<item value="hash"/>
+			<item value="&quot;archive&quot;, archive"/>
+			<item value="User"/>
+			<item value="user"/>
+			<item value="Document"/>
+			<item value="document"/>
+			<item value="protected Message sendArchive(Message message) throws BaseException {"/>
+			<item value="DOCUMENT"/>
+			<item value="USER"/>
+			<item value="Client"/>
+			<item value="Container"/>
+			<item value="Jdbc"/>
+		</list>
+		<list key="replacehistory">
+			<item value="&quot;id&quot;, archive.getId()"/>
+			<item value="&quot;id&quot;,id"/>
+			<item value="Archive"/>
+			<item value="archive"/>
+			<item value="ARCHIVE"/>
+			<item value="Impl"/>
+			<item value="ContainerFile"/>
+			<item value="Container"/>
+			<item value="Jdbc"/>
+			<item value="Client"/>
+			<item value="ArchiveFrame"/>
+			<item value="arc"/>
+			<item value="count"/>
+		</list>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item value="278" key="DIALOG_WIDTH"/>
+		<item value="1|Microsoft YaHei UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Microsoft YaHei UI" key="DIALOG_FONT_NAME"/>
+		<item value="410" key="DIALOG_HEIGHT"/>
+		<item value="946" key="DIALOG_X_ORIGIN"/>
+		<item value="120" key="DIALOG_Y_ORIGIN"/>
+	</section>
+</section>

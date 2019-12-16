@@ -1,0 +1,53 @@
+package edu.whut.cs.oo.dao.impl;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+
+import edu.whut.cs.oo.dao.ArchiveDao;
+import edu.whut.cs.oo.domain.Archive;
+import edu.whut.cs.oo.exception.BaseException;
+
+public class ArchiveDaoContainer implements ArchiveDao {
+	private static Hashtable<Long, Archive> archives = new Hashtable<Long, Archive>();
+
+	public Archive insert(Archive object) throws BaseException {
+		return archives.put(object.getId(), object);
+}
+	
+	public Archive update(Archive object) throws BaseException {
+		return archives.replace(object.getId(), object);
+	}
+
+	
+	public Archive delete(Archive object) throws BaseException {
+		return archives.remove(object.getId());
+		}
+
+	
+	public List<Archive> findAllOnes()  {
+		return new ArrayList<Archive>(archives.values());	
+		}
+
+	public Archive findByTitle(String title)  {
+		for (Archive archive : archives.values()) {
+			if (archive.getTitle().equals(title)) {
+				return archive;
+			}
+		}
+		return null;
+	}
+
+
+	public Archive findById(long id) throws BaseException {
+		for(Archive archive:archives.values()) {
+			if(archive.getId()==id)
+				return archive;
+		}
+		return null;
+	}
+
+}
+
+
+

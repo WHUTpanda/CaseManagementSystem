@@ -1,0 +1,91 @@
+package edu.whut.cs.oo.common;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import edu.whut.cs.oo.exception.BaseException;
+import edu.whut.cs.oo.exception.FileException;
+
+public class FileUtility {
+	
+    public static String getExtensionName(String filename) {   
+        if ((filename != null) && (filename.length() > 0)) {   
+            int dot = filename.lastIndexOf('.');   
+            if ((dot >-1) && (dot < (filename.length() - 1))) {   
+                return filename.substring(dot + 1);   
+            }   
+        }   
+        return filename;   
+    } 
+    
+    public static String getFileName(String filename) {   
+        if ((filename != null) && (filename.length() > 0)) {   
+            int split = filename.lastIndexOf('\\');  
+            if (split == -1) {
+            	split = filename.lastIndexOf('/'); 
+            }
+            if ((split >-1) && (split < (filename.length() - 1))) {   
+                return filename.substring(split + 1);   
+            }   
+        }   
+        return filename;   
+    }
+	
+	public static String uploadFile(String sourcefile) throws BaseException {
+		File uploadDirectory = new File(Constants.UPLOAD_PATH);
+		if (!uploadDirectory.exists()) {
+			uploadDirectory.mkdirs();
+		}
+		
+		byte[] buffer = new byte[1024];
+		
+		File tempFile =new File(sourcefile.trim());
+		String filename = tempFile.getName();
+		String extName = getExtensionName(filename);
+		String absolutePath = Constants.UPLOAD_PATH + System.currentTimeMillis() + "." + extName;
+		try {
+		BufferedInputStream infile = new BufferedInputStream(new FileInputStream(tempFile));
+		BufferedOutputStream targetfile = new BufferedOutputStream(new FileOutputStream(absolutePath)); 
+
+		while (true) {
+			int byteRead=infile.read(buffer); //从文件读数据给字节数组
+            if (byteRead==-1) //在文件尾，无数据可读
+                break;  //退出循环        
+            targetfile.write(buffer,0,byteRead);  //将读到的数据写入目标文件
+        }
+		infile.close();
+		targetfile.close();
+		} catch (IOException e) {
+			throw new FileException();
+		}
+		return absolutePath;
+	}
+	
+	public static void downloadFile(String absolutePath, String filename, String targetPath) throws IOException {
+		File downloadDirectory = new File(Constants.DOWNLOAD_PATH);
+		if (!downloadDirectory.exists()) {
+			downloadDirectory.mkdirs();
+		}
+		
+		byte[] buffer = new byte[1024];
+		
+		File tempFile =new File(absolutePath);
+		
+		BufferedInputStream infile = new BufferedInputStream(new FileInputStream(tempFile));
+		String saveFilePath = targetPath == null ? Constants.DOWNLOAD_PATH + filename : targetPath;
+		BufferedOutputStream targetfile = new BufferedOutputStream(new FileOutputStream(saveFilePath)); 
+
+		while (true) {
+			int byteRead=infile.read(buffer); //从文件读数据给字节数组
+            if (byteRead==-1) //在文件尾，无数据可读
+                break;  //退出循环
+            targetfile.write(buffer,0,byteRead);  //将读到的数据写入目标文件
+        }
+		infile.close();
+		targetfile.close();
+	}
+}

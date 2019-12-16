@@ -1,0 +1,1145 @@
+//package edu.whut.cs.oo.frame;
+//
+//import java.awt.BorderLayout;
+//import java.awt.Dimension;
+//import java.awt.FileDialog;
+//import java.awt.Toolkit;
+//import java.awt.event.ActionEvent;
+//import java.awt.event.ActionListener;
+//import java.awt.event.ItemEvent;
+//import java.awt.event.ItemListener;
+//import java.io.File;
+//import java.util.List;
+//
+//import javax.swing.JButton;
+//import javax.swing.JComboBox;
+//import javax.swing.JLabel;
+//import javax.swing.JOptionPane;
+//import javax.swing.JPanel;
+//import javax.swing.JPasswordField;
+//import javax.swing.JScrollPane;
+//import javax.swing.JTabbedPane;
+//import javax.swing.JTable;
+//import javax.swing.JTextArea;
+//import javax.swing.JTextField;
+//import javax.swing.ListSelectionModel;
+//import javax.swing.event.ChangeEvent;
+//import javax.swing.event.ChangeListener;
+//import javax.swing.table.DefaultTableModel;
+//
+//import edu.whut.cs.oo.domain.Administrator;
+//import edu.whut.cs.oo.domain.Browser;
+//import edu.whut.cs.oo.domain.Document;
+//import edu.whut.cs.oo.domain.Operator;
+//import edu.whut.cs.oo.domain.User;
+//import edu.whut.cs.oo.exception.BaseException;
+//
+//public class ArchiveFrame extends BaseFrame{
+//	JComboBox<String> comboBox,namecomboBox,rolecomboBox;
+//	JPanel panel_add,panel_mod,panel_del;
+//	JTextField nametextField;
+//	JPasswordField passwordField, passwordField_mod;
+//	
+//	private DefaultTableModel tableModel;
+//	private JTable table;
+//	JPanel panel_up,panel_down;
+//	JTextField DoctextField,filetextField;
+//	JTabbedPane tabbedPane ;
+//	JTextArea textArea;
+//	
+//	public ArchiveFrame() {		
+//		setTitle("案宗管理界面");
+//		setSize(400, 300);
+//		Toolkit toolkit = getToolkit();
+//		Dimension dimension = toolkit.getScreenSize();
+//		int screenHeight = dimension.height;
+//		int screenWidth = dimension.width;
+//		int frm_Height = this.getHeight();
+//		int frm_width = this.getWidth();
+//		this.setLocation((screenWidth - frm_width) / 2,
+//				(screenHeight - frm_Height) / 2);
+//		
+//		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+//		getContentPane().add(tabbedPane, BorderLayout.CENTER);
+//		
+//		//案宗下载卡片
+//		JPanel panel_down = new JPanel();
+//		tabbedPane.addTab("案宗下载", null, panel_down, null);
+//		panel_down.setLayout(null);		
+//				
+//		JScrollPane scrollPane = new JScrollPane();
+//		panel_down.add(scrollPane);
+//		
+//		scrollPane.setBounds(10, 10, 359, 126);
+//		table = new JTable();	
+//		
+//		showFileInfoToTable();		
+//		
+//		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+//		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+//		scrollPane.setViewportView(table);
+//	
+//		JButton downButton = new JButton("下载");
+//		downButton.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				downButtonActionPerformed(e);
+//			}
+//		});
+//		downButton.setBounds(121, 170, 65, 23);
+//		panel_down.add(downButton);
+//		
+//		JButton cancelButton_del = new JButton("返回");
+//		cancelButton_del.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				cancelButton_delActionPerformed(e);
+//			}
+//		});
+//		cancelButton_del.setBounds(187, 170, 65, 23);
+//		panel_down.add(cancelButton_del);
+//		
+//		//以上没问题
+//		//新增用户卡片
+//		panel_add = new JPanel();
+//		tabbedPane.addTab("新增用户", null, panel_add, null);
+//		panel_add.setLayout(null);
+//		
+//		JLabel nameLabel = new JLabel("案宗ID");
+//		nameLabel.setBounds(32, 28, 54, 15);
+//		panel_add.add(nameLabel);
+//		
+//		JLabel keyLabel = new JLabel("关键字");
+//		keyLabel.setBounds(32, 71, 54, 15);
+//		panel_add.add(keyLabel);
+//		
+//		JLabel roleLabel = new JLabel("案宗标题");
+//		roleLabel.setBounds(32, 121, 54, 15);
+//		panel_add.add(roleLabel);
+//		
+//		nametextField = new JTextField();
+//		nametextField.setBounds(121, 25, 131, 21);
+//		panel_add.add(nametextField);
+//		nametextField.setColumns(10);
+//		
+//		passwordField = new JPasswordField();
+//		passwordField.setBounds(121, 68, 131, 21);
+//		panel_add.add(passwordField);
+//		
+//		comboBox = new JComboBox<String>();
+//		comboBox.setBounds(121, 118, 131, 21);
+//		comboBox.setModel(new javax.swing.DefaultComboBoxModel<String>(
+//				new String[] {"Administrator", "Operator","Browser"}));
+//		comboBox.setSelectedIndex(2);
+//		panel_add.add(comboBox);
+//		
+//		JButton addButton = new JButton("增加");
+//		addButton.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				addButtonActionPerformed(e);				
+//			}
+//		});
+//		addButton.setBounds(121, 170, 65, 23);
+//		panel_add.add(addButton);
+//		
+//		JButton cancelButton = new JButton("取消");
+//		cancelButton.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				cancelButtonActionPerformed(e);
+//			}
+//		});
+//		cancelButton.setBounds(187, 170, 65, 23);
+//		panel_add.add(cancelButton);
+//		//修改案宗信息卡片
+//		//修改用户卡片
+//				JPanel panel_mod = new JPanel();
+//				tabbedPane.addTab("修改案宗", null, panel_mod, null);
+//				panel_mod.setLayout(null);
+//				
+//				nameLabel = new JLabel("案宗ID");
+//				nameLabel.setBounds(32, 28, 54, 15);
+//				panel_mod.add(nameLabel);
+//				
+//				keyLabel = new JLabel("关键字");
+//				keyLabel.setBounds(32, 71, 54, 15);
+//				panel_mod.add(keyLabel);
+//				
+//				roleLabel = new JLabel("案宗标题");
+//				roleLabel.setBounds(32, 121, 54, 15);
+//				panel_mod.add(roleLabel);
+//				
+//				
+//				
+//				
+//				
+//				
+//				
+//				
+//				namecomboBox = new JComboBox<String>();
+//				namecomboBox.setBounds(121, 25, 131, 21);
+//				namecomboBox.addItemListener(new ItemListener() {
+//					public void itemStateChanged(ItemEvent evt) {
+//						namecomboBoxItemStateChanged(evt);
+//					}
+//				});
+//				panel_mod.add(namecomboBox);
+//				
+//				passwordField_mod = new JPasswordField();
+//				passwordField_mod.setBounds(121, 68, 131, 21);
+//				panel_mod.add(passwordField_mod);
+//				
+//				rolecomboBox = new JComboBox<String>();
+//				rolecomboBox.setBounds(121, 118, 131, 21);
+//				rolecomboBox.setModel(new javax.swing.DefaultComboBoxModel<String>(
+//						new String[] { "Administrator", "Operator","Browser" }));			
+//				panel_mod.add(rolecomboBox);
+//				
+//				JButton modButton = new JButton("修改");
+//				modButton.addActionListener(new ActionListener() {
+//					public void actionPerformed(ActionEvent e) {
+//						modButtonActionPerformed(e) ;
+//					}
+//				});
+//				modButton.setBounds(121, 170, 65, 23);
+//				panel_mod.add(modButton);
+//				
+//				JButton cancelButton_mod = new JButton("取消");
+//				cancelButton_mod.addActionListener(new ActionListener() {
+//					public void actionPerformed(ActionEvent e) {
+//						cancelButton_modActionPerformed(e);
+//					}
+//				});
+//				cancelButton_mod.setBounds(187, 170, 65, 23);
+//				panel_mod.add(cancelButton_mod);
+//				
+//				//案宗目录卡片
+//				JPanel panel_list =new JPanel();
+//				tabbedPane.addTab("案宗目录", null, panel_list, null);
+//				panel_list.setLayout(null);
+//				
+//				
+//				JScrollPane listlPane = new JScrollPane();
+//				panel_list.add(listlPane);
+//				
+//				listlPane.setBounds(10, 10, 359, 126);
+//				table = new JTable();	
+//				
+//				showFileInfoToTable();		
+//
+//				table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+//				table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+//				listlPane.setViewportView(table);
+//		//案宗上传卡片
+//		panel_up = new JPanel();
+//		tabbedPane.addTab("案宗上传", null, panel_up, null);
+//		panel_up.setLayout(null);
+//		
+//		JLabel DocLabel = new JLabel("案宗ID");
+//		DocLabel.setBounds(32, 28, 54, 15);
+//		panel_up.add(DocLabel);		
+//		
+//		JLabel DescriptionLabel = new JLabel("案宗标题");
+//		DescriptionLabel.setBounds(32, 71, 54, 15);
+//		panel_up.add(DescriptionLabel);
+//		
+//		JLabel fileLabel = new JLabel("案宗关键字");
+//		fileLabel.setBounds(32, 151, 65, 15);
+//		panel_up.add(fileLabel);
+//		
+//		DoctextField = new JTextField();
+//		DoctextField.setBounds(121, 25, 131, 21);
+//		panel_up.add(DoctextField);
+//		DoctextField.setColumns(10);
+//		
+//		JButton upButton = new JButton("上传");
+//		upButton.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				upButtonActionPerformed(e);				
+//			}
+//		});
+//		upButton.setBounds(121, 188, 65, 23);
+//		panel_up.add(upButton);
+//		
+//		JButton cancelButton1 = new JButton("取消");
+//		cancelButton1.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				cancelButtonActionPerformed(e);
+//			}
+//		});
+//		cancelButton1.setBounds(187, 188, 65, 23);
+//		panel_up.add(cancelButton1);
+//		
+//		JScrollPane scrollPane_1 = new JScrollPane();
+//		scrollPane_1.setBounds(123, 67, 129, 60);
+//		panel_up.add(scrollPane_1);
+//		
+//		textArea = new JTextArea();
+////		textArea.setBounds(123, 67, 129, 60);
+////		scrollPane_1.add(textArea);
+//		scrollPane_1.setViewportView(textArea);
+//		
+//		JButton fileButton = new JButton("打开");
+//		fileButton.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				fileButtonActionListener(e);
+//			}
+//		});
+//		fileButton.setBounds(262, 147, 65, 23);
+//		panel_up.add(fileButton);
+//		
+//		filetextField = new JTextField();
+//		filetextField.setBounds(121, 148, 131, 21);
+//		panel_up.add(filetextField);
+//		filetextField.setColumns(255);
+//		
+//		
+//		tabbedPane.addChangeListener(new ChangeListener() {
+//			public void stateChanged(ChangeEvent evt) {
+//				jTabbedPaneStateChanged(evt);
+//			}
+//		});
+//		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+//		
+//		if (currentUser instanceof Operator) 
+//			tabbedPane.setEnabledAt(1, true);
+//		else
+//			tabbedPane.setEnabledAt(1, false);
+//	}
+//	
+//	public static void launch() {	   
+//		java.awt.EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				new FileFrame().setVisible(true);
+//			}
+//		});
+//	}
+//	
+//	public void setTabSeq(int index){
+//		tabbedPane.setSelectedIndex(index);
+//	}
+//	
+//	private void jTabbedPaneStateChanged(javax.swing.event.ChangeEvent evt) {
+//		if(tabbedPane.getSelectedIndex()==0){
+//			showFileInfoToTable();
+//		}		
+//	}
+//	
+//	public void showFileInfoToTable() {
+//		try {
+//			String[] colName = {"案宗号", "创建者", "时间","文件名","描述"};
+//			String[][] tableValue = new String[10][5];
+//			List<Document> documents = documentService.getAllDocuments();
+//			for (int row = 0; row < documents.size(); row++) {
+//				Document doc = documents.get(row);
+//				tableValue[row][0]=doc.getSn();
+//				tableValue[row][1]=doc.getUser().getName();
+//				tableValue[row][2]=(doc.getTimestamp()).toString();
+//				tableValue[row][3]=doc.getName();
+//				tableValue[row][4]=doc.getDescription();
+//			}
+//			tableModel = new DefaultTableModel(tableValue, colName);
+//			table.setModel(tableModel);
+//		}
+//		catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
+//	private void addButtonActionPerformed(ActionEvent evt) {
+//		try{
+//			if (JOptionPane.showConfirmDialog(this,
+//					"确定新增用户吗？\t\n单击确定按钮将新增。", "确认对话框",
+//					JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+//				String name=nametextField.getText();
+//				String password=new String(passwordField.getPassword());
+//				String role=(String)comboBox.getSelectedItem();
+//				
+//				User user = null;
+//				switch (role) {
+//				case "Administrator" :
+//					user = new Administrator();
+//					break;
+//				case "Operator" :
+//					user = new Operator();
+//					break;
+//				case "Browser" :
+//					user = new Browser();
+//				}
+//				
+//				user.setName(name);
+//				user.setPassword(password);
+//				
+//				userService.createUser(user);
+//				JOptionPane.showMessageDialog(this,"新增用户成功！");
+//				
+//				nametextField.setText("");
+//				passwordField.setText("");
+//				comboBox.setSelectedIndex(-1);
+//			}
+//		}catch(Exception ex){
+//			
+//		}
+//	}
+//	private void upButtonActionPerformed(ActionEvent evt) {
+//	try{
+//		if (JOptionPane.showConfirmDialog(this,
+//				"确定上传档案吗？\t\n单击确定按钮将上传。", "确认对话框",
+//				JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+//			String ID=DoctextField.getText();
+//			String filename=filetextField.getText();
+//			String description=(String)textArea.getText();
+//			
+//			Document document = new Document();
+//			document.setSn(ID);
+//			document.setSourcePath(filename);
+//			document.setDescription(description);
+//			
+//			documentService.uploadDocument(document);
+//			
+//			DoctextField.setText("");
+//			filetextField.setText("");
+//			textArea.setText("");
+//			JOptionPane.showMessageDialog(this, "上传成功！");	
+//		}
+//	}catch (BaseException be) {
+//		JOptionPane.showMessageDialog(this, be.getMessage());		
+//	}catch(Exception ex){
+//		JOptionPane.showMessageDialog(this,"上传案宗失败！");
+//	}
+//}
+//	
+//	private void cancelButtonActionPerformed(ActionEvent evt){
+//		DoctextField.setText("");
+//		filetextField.setText("");
+//		textArea.setText("");
+//	}
+//	
+//	private void downButtonActionPerformed(ActionEvent evt){
+//		try{
+//			if (JOptionPane.showConfirmDialog(this,
+//					"确定要下载档案吗？\t\n单击确定按钮将下载。", "确认对话框",
+//					JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+//				int currentRow = table.getSelectedRow();
+//				String documentSn = "";
+//				String filename = "";						
+//				Object object = tableModel.getValueAt(currentRow, 0);
+//				if (object != null) {
+//					documentSn = object.toString();
+//					filename = (String)tableModel.getValueAt(currentRow, 3);
+//				}
+//
+//				FileDialog dlg_save=new FileDialog(this," 保存文件对话框",FileDialog.SAVE);
+//				dlg_save.setFile(filename);
+//				dlg_save.setVisible(true);
+//				if(dlg_save.getFile()!=null){  
+//		            File downfile=new File(dlg_save.getDirectory(),dlg_save.getFile());
+//		            
+//		            Document document = documentService.getDocument(documentSn);
+//		            documentService.downloadDocument(documentSn, downfile.getAbsolutePath());
+//		            
+//		            JOptionPane.showMessageDialog(this, "下载成功！");				
+//				}
+//			}
+//		}catch (BaseException be) {
+//			JOptionPane.showMessageDialog(this, be.getMessage());
+//		}catch(Exception ex){
+//			 JOptionPane.showMessageDialog(this, "下载失败！");
+//		}
+//	}
+//	
+//	private void fileButtonActionListener(ActionEvent evt){
+//		FileDialog dlg_open=new FileDialog(this,"打开案宗对话框",FileDialog.LOAD);
+//		dlg_open.setVisible(true);
+//		if(dlg_open.getFile()!=null){  
+//			//File file=new File(dlg_open.getDirectory(),dlg_open.getFile());  
+//            filetextField.setText(dlg_open.getDirectory()+dlg_open.getFile());
+//        }  
+//		
+//	}
+//	private void namecomboBoxItemStateChanged(ItemEvent evt){
+//		User user;
+//		if (evt.getStateChange() == ItemEvent.SELECTED) {
+//			try{
+//				user = userService.getUser((String)evt.getItem());
+//				passwordField_mod.setText(user.getPassword());
+//				rolecomboBox.setSelectedItem(user.getClass().getSimpleName());
+//			}catch(Exception ex){
+//				ex.printStackTrace();
+//			}
+//		}
+//	}
+//	private void modButtonActionPerformed(ActionEvent evt){
+//		try{
+//			if (JOptionPane.showConfirmDialog(this,
+//					"确定要修改信息吗？\t\n单击确定按钮将修改。", "确认对话框",
+//					JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+//				String name=(String)namecomboBox.getSelectedItem();
+//				String password=new String(passwordField_mod.getPassword());			
+//				String role=(String)rolecomboBox.getSelectedItem();
+//				
+//				User user = null;
+//				switch (role) {
+//				case "Administrator" :
+//					user = new Administrator();
+//					break;
+//				case "Operator" :
+//					user = new Operator();
+//					break;
+//				default :
+//					user = new Browser();
+//				}
+//				user.setName(name);
+//				user.setPassword(password);
+//				userService.updateUser(user);
+//				
+//				JOptionPane.showMessageDialog(this,"用户信息修改成功！");
+//			}
+//		}catch(Exception ex){
+//			ex.printStackTrace();
+//		}
+//	}
+//	private void cancelButton_modActionPerformed(ActionEvent evt){
+//		User user;
+//		try{
+//			String name=(String)namecomboBox.getSelectedItem();
+//			user = userService.getUser(name);
+//			passwordField_mod.setText(user.getPassword());
+//			rolecomboBox.setSelectedItem(user.getClass().getSimpleName());
+//		}catch(Exception ex){
+//			ex.printStackTrace();
+//		}
+//	}
+//	
+//	private void cancelButton_delActionPerformed(ActionEvent evt){
+//		this.dispose();
+//	}
+//	
+//	public static void main(String[] args) {
+//		FileFrame.launch();				
+//	}
+//}
+package edu.whut.cs.oo.frame;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FileDialog;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.io.File;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.table.DefaultTableModel;
+
+import edu.whut.cs.oo.domain.Archive;
+import edu.whut.cs.oo.domain.Browser;
+import edu.whut.cs.oo.domain.Operator;
+import edu.whut.cs.oo.domain.SecurityClassfication;
+import edu.whut.cs.oo.exception.BaseException;
+import edu.whut.cs.oo.service.ArchiveService;
+
+public class ArchiveFrame extends BaseFrame{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3218920181097118954L;
+	private String[] colName = {"案宗ID", "创建者", "时间","文件名","案宗标题","案宗密级","案宗关键词"};
+	private DefaultTableModel tableModel,tableModel_query;
+	private JTable table,table_del,table_query;
+	JPanel panel_up,panel_down,panel_del,panel_query;
+	JTextField DoctextField,filetextField,keywordtextField,titletextField,securitytextField,titleField
+				,keyField,idField,titleField_query;
+	JTabbedPane tabbedPane ;
+	JTextArea textArea;
+	JComboBox<String>securitycomboBox;
+	JComboBox<Long>idcomboBox;
+	
+	public ArchiveFrame() {		
+		setTitle("案宗管理界面");
+		setSize(600, 400);
+		Toolkit toolkit = getToolkit();
+		Dimension dimension = toolkit.getScreenSize();
+		int screenHeight = dimension.height;
+		int screenWidth = dimension.width;
+		int frm_Height = this.getHeight();
+		int frm_width = this.getWidth();
+		this.setLocation((screenWidth - frm_width) / 2,
+				(screenHeight - frm_Height) / 2);
+		
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		getContentPane().add(tabbedPane, BorderLayout.CENTER);
+		
+		//文件下载卡片
+		JPanel panel_down = new JPanel();
+		tabbedPane.addTab("案宗下载", null, panel_down, null);
+		panel_down.setLayout(null);		
+				
+		JScrollPane scrollPane = new JScrollPane();
+		panel_down.add(scrollPane);
+		
+		scrollPane.setBounds(10, 10, 500, 126);
+		table = new JTable();	
+		
+		showFileInfoToTable(table);		
+		
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		scrollPane.setViewportView(table);
+	
+		JButton downButton = new JButton("下载");
+		downButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				downButtonActionPerformed(e);
+			}
+		});
+		downButton.setBounds(121, 170, 65, 23);
+		panel_down.add(downButton);
+		
+		JButton cancelButton_down = new JButton("返回");
+		cancelButton_down.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cancelButton_delActionPerformed(e);
+			}
+		});
+		cancelButton_down.setBounds(187, 170, 65, 23);
+		panel_down.add(cancelButton_down);
+		
+		//文件上传卡片
+		panel_up = new JPanel();
+		tabbedPane.addTab("案宗上传", null, panel_up, null);
+		panel_up.setLayout(null);
+		
+		JLabel DocLabel = new JLabel("案宗ID");
+		DocLabel.setBounds(32, 28, 54, 15);
+		panel_up.add(DocLabel);		
+		
+		JLabel DescriptionLabel = new JLabel("案宗标题");
+		DescriptionLabel.setBounds(32, 71, 54, 15);
+		panel_up.add(DescriptionLabel);
+		
+		JLabel keywordLabel = new JLabel("案宗关键词");
+		keywordLabel.setBounds(32, 110, 70, 15);
+		panel_up.add(keywordLabel);
+		
+		JLabel fileLabel = new JLabel("上传案宗");
+		fileLabel.setBounds(32, 151, 65, 15);
+		panel_up.add(fileLabel);
+		
+		JLabel securityLabel = new JLabel("案宗密级");
+		securityLabel.setBounds(32, 190, 54, 15);
+		panel_up.add(securityLabel);
+		
+		DoctextField = new JTextField();
+		DoctextField.setBounds(121, 25, 131, 21);
+		panel_up.add(DoctextField);
+		DoctextField.setColumns(10);
+		
+		
+		
+		/*JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(123, 67, 129, 60);
+		panel_up.add(scrollPane_1);*/
+		
+		titletextField = new JTextField();
+		titletextField.setBounds(123, 67, 131, 21);
+		panel_up.add(titletextField);
+		titletextField.setColumns(10);
+		/*securityClassficationtextField = new JTextField();
+		securityClassficationtextField.setBounds(123, 67, 131, 21);
+		panel_up.add(securityClassficationtextField);
+		securityClassficationtextField.setColumns(10);
+		
+		textArea = new JTextArea();
+		textArea.setBounds(123, 67, 129, 60);
+		scrollPane_1.add(textArea);
+		scrollPane_1.setViewportView(textArea);*/
+		
+		keywordtextField = new JTextField();
+		keywordtextField.setBounds(123, 105, 131, 21);
+		panel_up.add(keywordtextField);
+		keywordtextField.setColumns(10);
+		
+		filetextField = new JTextField();
+		filetextField.setBounds(121, 148, 131, 21);
+		panel_up.add(filetextField);
+		filetextField.setColumns(255);
+		
+		securitytextField= new JTextField();
+		securitytextField.setBounds(121,185,131,21);
+		panel_up.add(securitytextField);
+		securitytextField.setColumns(10);
+		
+		JButton fileButton = new JButton("打开");
+		fileButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				fileButtonActionListener(e);
+			}
+		});
+		fileButton.setBounds(262, 147, 65, 23);
+		panel_up.add(fileButton);
+		
+		JButton upButton = new JButton("上传");
+		upButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				upButtonActionPerformed(e);				
+			}
+		});
+		upButton.setBounds(121, 230, 65, 23);
+		panel_up.add(upButton);
+		
+		JButton cancelButton = new JButton("取消");
+		cancelButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cancelButtonActionPerformed(e);
+			}
+		});
+		cancelButton.setBounds(187,230, 65, 23);
+		panel_up.add(cancelButton);
+
+		/*//案宗目录卡片
+		JPanel panel_list =new JPanel();
+		tabbedPane.addTab("案宗目录", null, panel_list, null);
+		panel_list.setLayout(null);
+		
+		
+		JScrollPane listlPane = new JScrollPane();
+		panel_list.add(listlPane);
+		
+		listlPane.setBounds(10, 10, 359, 126);
+		table = new JTable();	
+		
+		showFileInfoToTable();		
+
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		listlPane.setViewportView(table);
+*/
+		//修改案宗基本信息
+		JPanel panel_mod = new JPanel();
+		tabbedPane.addTab("修改案宗信息", null, panel_mod, null);
+		panel_mod.setLayout(null);
+			
+		JLabel idLabel = new JLabel("案宗ID");
+		idLabel.setBounds(32, 28, 54, 15);
+		panel_mod.add(idLabel);
+		
+		JLabel titleLabel = new JLabel("案宗标题");
+		titleLabel.setBounds(32, 71, 54, 15);
+		panel_mod.add(titleLabel);
+		
+		JLabel keyLabel = new JLabel("关键词");
+		keyLabel.setBounds(32, 121, 54, 15);
+		panel_mod.add(keyLabel);
+		
+		JLabel securitylabel = new JLabel("案宗密级");
+		securitylabel.setBounds(32, 170, 54, 15);
+		panel_mod.add(securitylabel);
+		
+		idcomboBox = new JComboBox<Long>();
+		idcomboBox.setBounds(121, 25, 131, 21);
+		idcomboBox.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent evt) {
+				idcomboBoxItemStateChanged(evt);
+			}
+		});
+		panel_mod.add(idcomboBox);
+		
+		titleField = new JTextField();
+		titleField.setBounds(121, 68, 131, 21);
+		titleField.setColumns(10);
+		panel_mod.add(titleField);
+		
+		keyField=new JTextField();
+		keyField.setBounds(121, 118, 131, 21);
+		keyField.setColumns(10);
+		panel_mod.add(keyField);
+		
+		securitycomboBox = new JComboBox<String>();
+		securitycomboBox.setBounds(121, 165, 131, 21);
+		securitycomboBox.setModel(new javax.swing.DefaultComboBoxModel<String>(new String[] { "A", "B","C","D" }));			
+		panel_mod.add(securitycomboBox);
+		
+		JButton modButton = new JButton("修改");
+		modButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				modButtonActionPerformed(e) ;
+			}
+		});
+		modButton.setBounds(121, 190, 65, 23);
+		panel_mod.add(modButton);
+		
+		JButton cancelButton_mod = new JButton("取消");
+		cancelButton_mod.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cancelButton_modActionPerformed(e);
+			}
+		});
+		cancelButton_mod.setBounds(187, 190, 65, 23);
+		panel_mod.add(cancelButton_mod);
+		
+		//删除案宗
+		panel_del = new JPanel();
+		tabbedPane.addTab("删除案宗", null, panel_del, null);
+		panel_del.setLayout(null);
+		
+		JScrollPane Pane = new JScrollPane();
+		panel_del.add(Pane);
+		Pane.setBounds(10, 10, 500, 126);
+		table_del = new JTable();
+		
+		showFileInfoToTable(table_del);
+		table_del.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
+		table_del.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+		Pane.setViewportView(table_del);
+	
+		JButton delButton = new JButton("删除");
+		delButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				delButtonActionPerformed(e);
+			}
+		});
+		delButton.setBounds(121, 170, 65, 23);
+		panel_del.add(delButton);
+		
+		JButton cancelButton_del = new JButton("返回");
+		cancelButton_del.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cancelButton_delActionPerformed(e);
+			}
+		});
+		cancelButton_del.setBounds(187, 170, 65, 23);
+		panel_del.add(cancelButton_del);
+		//按照标题查找案宗
+		panel_query = new JPanel();
+		tabbedPane.addTab("查询案宗", null, panel_query, null);
+		panel_query.setLayout(null);
+		
+		JLabel titleLabel_query = new JLabel("案宗标题");
+		titleLabel_query.setBounds(32, 28, 54, 15);
+		panel_query.add(titleLabel_query);
+		
+		titleField_query = new JTextField();
+		titleField_query.setBounds(121, 25, 131, 21);
+		titleField_query.setColumns(10);
+		panel_query.add(titleField_query);
+		
+		JScrollPane Pane_query = new JScrollPane();
+		panel_query.add(Pane_query);
+		
+		Pane_query.setBounds(10, 70, 500, 80);
+		
+		table_query = new JTable();
+		table_query.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
+		table_query.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+		Pane_query.setViewportView(table_query);
+		
+		JButton queryButton = new JButton("查询");
+		queryButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				queryButtonActionPerformed(e);
+			}
+		});
+		queryButton.setBounds(121, 170, 65, 23);
+		panel_query.add(queryButton);
+		
+		JButton cancelButton_query = new JButton("返回");
+		cancelButton_query.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cancelButton_queryActionPerformed(e);
+			}
+		});
+		cancelButton_query.setBounds(187, 170, 65, 23);
+		panel_query.add(cancelButton_query);
+		
+		tabbedPane.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent evt) {
+				jTabbedPaneStateChanged(evt);
+			}
+		});
+		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+		
+		if (currentUser instanceof Operator) 
+			tabbedPane.setEnabledAt(1, true);
+		else if(currentUser instanceof Browser){
+			tabbedPane.setEnabledAt(1, false);
+			tabbedPane.setEnabledAt(2, false);
+			tabbedPane.setEnabledAt(3, false);
+		}
+		else
+			tabbedPane.setEnabledAt(1, false);
+
+	}
+
+
+	private void idcomboBoxItemStateChanged(ItemEvent evt) {
+		Archive archive;
+		if (evt.getStateChange() == ItemEvent.SELECTED) {
+			try{
+				archive = archiveService.getArchive(Long.parseLong(evt.getItem().toString()));
+				titleField.setText(archive.getTitle());
+				keyField.setText(archive.getKeyword());
+				securitycomboBox.setSelectedItem(archive.getSecurityClassfication().getName());
+			}catch(Exception ex){
+				ex.printStackTrace();
+			}
+		}
+		
+	}
+	public void addidToComboBox() {
+		try {
+			idcomboBox.removeAllItems();
+
+			List<Archive> arcs = archiveService.getAllArchives();
+			for (Archive arc : arcs) {
+				idcomboBox.addItem(arc.getId());
+			}
+		}catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	protected void queryButtonActionPerformed(ActionEvent e) {
+		try{	
+			if (JOptionPane.showConfirmDialog(this,
+					"确定要查询案宗吗？\t\n单击确定按钮将查询。", "确认对话框",
+					JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+				String title=titleField_query.getText();
+				List<Archive> arcs=archiveService.findByTitle(title);
+				if(arcs!=null) {
+					int size=arcs.size();
+					String[][] tableValue = new String[size][7];
+					for(int count=0;count<size;count++) {
+					Archive	arc=arcs.get(count);
+					tableValue[count][0]=Long.toString(arc.getId());
+					tableValue[count][1]=arc.getUser().getName();
+					tableValue[count][2]=(arc.getTimestamp()).toString();
+					tableValue[count][3]=arc.getFileName();
+					tableValue[count][4]=arc.getTitle();
+					tableValue[count][5]=(arc.getSecurityClassfication()).toString();
+					tableValue[count][6]=arc.getKeyword();	
+					}		
+					tableModel_query = new DefaultTableModel(tableValue, colName);
+					table_query.setModel(tableModel_query);
+			}
+				arcs.clear();
+			}
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+	}
+
+	protected void cancelButton_queryActionPerformed(ActionEvent e) {
+		titleField_query.setText("");
+	}
+
+	private void delButtonActionPerformed(ActionEvent e) {
+		try{
+			if (JOptionPane.showConfirmDialog(this,
+					"确定要删除案宗吗？\t\n单击确定按钮将删除。", "确认对话框",
+					JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+				int currentRow = table_del.getSelectedRow();
+				long id = -1;
+				Object object = tableModel.getValueAt(currentRow, 0);
+				System.out.println(currentRow);
+				if (object != null) {
+					id = Long.parseLong(object.toString());
+				}
+				if (archiveService.deleteArchive(id) != null){					
+					showFileInfoToTable(table_del);
+					JOptionPane.showMessageDialog(this, "删除成功！");
+				}
+				else
+					JOptionPane.showMessageDialog(this, "删除失败！");
+			}
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+		
+	}
+
+	private void cancelButton_modActionPerformed(ActionEvent e) {
+		Archive archive;
+		try{
+			long id=Long.parseLong(idcomboBox.getSelectedItem().toString());
+			archive = archiveService.getArchive(id);
+			titleField.setText(archive.getTitle());
+			keyField.setText(archive.getKeyword());
+			securitycomboBox.setSelectedItem(archive.getSecurityClassfication().getName());
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+	}
+
+	protected void modButtonActionPerformed(ActionEvent e) {
+		try{
+			if (JOptionPane.showConfirmDialog(this,
+					"确定要修改信息吗？\t\n单击确定按钮将修改。", "确认对话框",
+					JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+				long id=Long.parseLong(idcomboBox.getSelectedItem().toString());
+				String title=titleField.getText();
+				String keyword=keyField.getText();		
+				String security=(String)securitycomboBox.getSelectedItem();
+				Archive arc=archiveService.getArchive(id);
+				arc.setKeyword(keyword);
+				arc.setSecurityClassfication(SecurityClassfication.getSecurityClassfication(security));
+				arc.setTitle(title);
+				archiveService.updateArchive(arc);
+				JOptionPane.showMessageDialog(this,"用户信息修改成功！");
+			}
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+		
+		
+	}
+
+	public static void launch() {	   
+		java.awt.EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				new ArchiveFrame().setVisible(true);
+			}
+		});
+	}
+	
+	public void setTabSeq(int index){
+		tabbedPane.setSelectedIndex(index);
+	}
+	
+	private void jTabbedPaneStateChanged(javax.swing.event.ChangeEvent evt) {
+		if(tabbedPane.getSelectedIndex()==0){
+			showFileInfoToTable(table);
+		}	
+		if(tabbedPane.getSelectedIndex()==2) {
+			addidToComboBox();
+		}
+		if(tabbedPane.getSelectedIndex()==3){
+			showFileInfoToTable(table_del);
+		}	
+	}
+	
+	public void showFileInfoToTable(JTable table) {
+		try {
+			String[][] tableValue = new String[10][7];
+			List<Archive> archives = archiveService.getAllArchives();
+			for (int row = 0; row < archives.size(); row++) {
+				Archive arc = archives.get(row);
+				tableValue[row][0]=Long.toString(arc.getId());
+				tableValue[row][1]=arc.getUser().getName();
+				tableValue[row][2]=(arc.getTimestamp()).toString();
+				tableValue[row][3]=arc.getFileName();
+				tableValue[row][4]=arc.getTitle();
+				tableValue[row][5]=(arc.getSecurityClassfication()).toString();
+				tableValue[row][6]=arc.getKeyword();
+			}
+			tableModel = new DefaultTableModel(tableValue, colName);
+			table.setModel(tableModel);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void upButtonActionPerformed(ActionEvent evt) {
+		try{
+			if (JOptionPane.showConfirmDialog(this,
+					"确定上传案宗吗？\t\n单击确定按钮将上传。", "确认对话框",
+					JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+				long ID=Long.parseLong(DoctextField.getText());
+				String filename=filetextField.getText();
+				String keyword=keywordtextField.getText();
+				String title=titletextField.getText();
+				String security=securitytextField.getText();
+				Archive archive = new Archive();
+				archive.setId(ID);
+				archive.setSourcePath(filename);
+				archive.setKeyword(keyword);
+				archive.setTitle(title);
+				archive.setSecurityClassfication(SecurityClassfication.getSecurityClassfication(security));
+				
+				archiveService.uploadArchive(archive);
+				
+				DoctextField.setText("");
+				filetextField.setText("");
+				keywordtextField.setText("");
+				securitytextField.setText("");
+				titletextField.setText("");
+				JOptionPane.showMessageDialog(this, "上传成功！");	
+			}
+		}catch (BaseException be) {
+			JOptionPane.showMessageDialog(this, be.getMessage());		
+		}catch(Exception ex){
+			JOptionPane.showMessageDialog(this,"上传案宗失败！");
+		}
+
+}
+	
+	private void cancelButtonActionPerformed(ActionEvent evt){
+		DoctextField.setText("");
+		filetextField.setText("");
+		keywordtextField.setText("");
+		securitytextField.setText("");
+		titletextField.setText("");
+	}
+	
+	private void downButtonActionPerformed(ActionEvent evt){
+		try{
+			if (JOptionPane.showConfirmDialog(this,
+					"确定要下载案宗吗？\t\n单击确定按钮将下载。", "确认对话框",
+					JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+				int currentRow = table.getSelectedRow();
+				long archiveId =-1;
+				String filename = "";						
+				Object object = tableModel.getValueAt(currentRow, 0);
+				if (object != null) {
+					archiveId = Long.parseLong(object.toString());
+					filename = (String)tableModel.getValueAt(currentRow, 3);
+				}
+				FileDialog dlg_save=new FileDialog(this," 保存文件对话框",FileDialog.SAVE);
+				dlg_save.setFile(filename);
+				dlg_save.setVisible(true);
+				if(dlg_save.getFile()!=null){  
+		            File downfile=new File(dlg_save.getDirectory(),dlg_save.getFile());
+		            Archive archive = archiveService.getArchive(archiveId);
+		            archiveService.downloadArchive(archiveId,downfile.getAbsolutePath()); 
+		            JOptionPane.showMessageDialog(this, "下载成功！");				
+				}
+			}
+		}catch (BaseException be) {
+			JOptionPane.showMessageDialog(this, be.getMessage());
+		}catch(Exception ex){
+			 JOptionPane.showMessageDialog(this, "下载失败！");
+		}
+	}
+	
+	private void fileButtonActionListener(ActionEvent evt){
+		FileDialog dlg_open=new FileDialog(this,"打开文件对话框",FileDialog.LOAD);
+		dlg_open.setVisible(true);
+		if(dlg_open.getFile()!=null){  
+			//File file=new File(dlg_open.getDirectory(),dlg_open.getFile());  
+            filetextField.setText(dlg_open.getDirectory()+dlg_open.getFile());
+        }  
+
+	}
+
+	
+	private void cancelButton_delActionPerformed(ActionEvent evt){
+		this.dispose();
+	}
+	
+	public static void main(String[] args) {
+		ArchiveFrame.launch();				
+	}
+}
+
